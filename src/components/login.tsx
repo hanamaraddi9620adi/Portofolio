@@ -1,0 +1,83 @@
+"use client";
+import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+export function Login() {
+  const [busy, setBusy] = useState(false),
+    [error, setError] = useState("");
+  const router = useRouter();
+  async function submit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setBusy(true);
+    setError("");
+    try {
+      const fields = Object.fromEntries(new FormData(e.currentTarget));
+      const r = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fields),
+      });
+      const body = await r.json();
+      if (!r.ok) setError(body.error);
+      else {
+        try {
+          localStorage.setItem("portfolio-exclude", "true");
+        } catch {
+          // Server-side owner exclusion still applies when browser storage is blocked.
+        }
+        router.replace("/admin/analytics");
+        router.refresh();
+      }
+    } catch {
+      setError("Unable to sign in. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <form className="login-form" onSubmit={submit}>
+      <label>
+        Owner email
+        <input name="email" type="email" required autoComplete="username" />
+      </label>
+      <label>
+        Password
+        <input
+          name="password"
+          type="password"
+          required
+          autoComplete="current-password"
+        />
+      </label>
+      <button className="button primary" disabled={busy}>
+        {busy ? "Checking access…" : "Sign in securely →"}
+      </button>
+      <p role="alert" className="form-status">
+        {error}
+      </p>
+    </form>
+  );
+}
+export function Logout() {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  return (
+    <button
+      className="button small"
+      disabled={busy}
+      onClick={async () => {
+        setBusy(true);
+        try {
+          const r = await fetch("/api/auth/logout", { method: "POST" });
+          if (r.ok) {
+            router.replace("/admin/login");
+            router.refresh();
+          }
+        } finally {
+          setBusy(false);
+        }
+      }}
+    >
+      Sign out
+    </button>
+  );
+}
