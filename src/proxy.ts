@@ -8,4 +8,6 @@ export function proxy(request: NextRequest) {
   response.headers.set("Cache-Control", "private, no-store");
   return response;
 }
-export const config = { matcher: "/admin/analytics/:path*" };
+export const config = {
+  matcher: ["/admin/analytics/:path*", "/admin/messages/:path*"],
+};

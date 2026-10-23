@@ -1,3 +1,4 @@
+import { newInboxSecret } from "@/lib/conversations";
 import { contactSchema } from "@/lib/validation";
 import {
   ApiError,
@@ -25,15 +26,21 @@ export async function POST(req: Request) {
     await rateLimit(req, "contact", 5);
     await verifyHuman(parsed.data.token);
     const { name, email, message } = parsed.data;
-    const { error } = await database()
+    const inbox = newInboxSecret();
+    const { data, error } = await database()
       .from("contact_submissions")
-      .insert({ name, email, message, consent: true });
+      .insert({ name, email, message, consent: true, inbox_hash: inbox.hash })
+      .select("id")
+      .single();
     if (error)
       throw new ApiError(
         "Your message could not be saved. Please use email or try again.",
         503,
       );
-    return Response.json({ ok: true });
+    return Response.json(
+      { ok: true, inboxAccess: data.id + "." + inbox.secret },
+      { headers: { "Cache-Control": "no-store" } },
+    );
   } catch (e) {
     return failure(e);
   }

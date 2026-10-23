@@ -1,138 +1,104 @@
 # Hanamaraddi Kanakannavar — Portfolio
 
-A custom Next.js App Router + TypeScript portfolio, built in `E:\Portofolio\Portofolio_codex`. Graphite backgrounds, vermilion typography, original Three.js terrain, responsive project case studies, consent-aware analytics and a private owner dashboard. No ThreeUI source or imagery is used.
+Next.js 16 App Router + TypeScript portfolio in E:\Portofolio\Portofolio_codex, with original Three.js terrain, personal photographs, six project case studies, consented viewer analytics and private two-way conversations.
 
-## Run locally
+## Open locally
 
-Double-click `START-PORTFOLIO.cmd`, then open **http://localhost:3100**. Dependencies are already installed. The launcher intentionally uses 3100 because another application occupied 3000 during development.
+Double-click **START-PORTFOLIO.cmd**, then open **http://localhost:3100**. The launcher uses port 3100 and sets the matching request origin. Dependencies are installed; a fresh clone needs npm ci first. Keep the server running while you use the website.
 
-Alternatively, in PowerShell:
+## Your connected Supabase project
 
-```powershell
-cd E:\Portofolio\Portofolio_codex
-npm.cmd ci
-Copy-Item .env.example .env.local
-# Edit .env.local with provider values. The public site runs without them.
-npm.cmd run dev
-```
+- Project: **Portofolio**, Mumbai (ap-south-1).
+- Dashboard: https://supabase.com/dashboard/project/rorrpbyiyycnbbemjiio
+- API URL: https://rorrpbyiyycnbbemjiio.supabase.co
+- New-project cost quoted by Supabase at setup: **$0/month**; usage/plan changes are provider-managed.
+- Your confirmed owner account is allowlisted by BOTH user UUID and email in the ignored .env.local file.
+- Tables and RLS, the portfolio-data Edge Function, rate limiting and daily retention have been installed.
+- No private credential or password is committed. .env.local and .vercel are ignored.
 
-The normal dev script uses http://localhost:3000. `NEXT_PUBLIC_SITE_URL` must exactly match the origin visitors use, including port, for form CSRF checks. Do not use `127.0.0.1` when the configured origin is `localhost`. The launcher sets this value to 3100 for its session.
+## Where you see visitors and messages
 
-## Architecture and editing
+1. Sign in at **/admin/login** using your Supabase owner email/password.
+2. **/admin/analytics** shows real consented page views, unique browser sessions, project engagement, referral domains, voluntary professional visits and contact submissions. Date filters and private CSV export are included.
+3. Choose **Open message inbox** or visit **/admin/messages**. Open a conversation to read and reply; close/reopen it as needed. New visitor replies return the conversation to Awaiting reply.
+4. Visitors submit the contact form, then receive a private **/messages#...** link. Saving that link lets them read your reply and write back without an account. Replies refresh every 20 seconds while the tab is visible. There are no email notifications.
 
-```text
-src/
-  app/                 App Router pages, metadata, API endpoints
-    projects/[slug]/   Six reusable, data-driven case studies
-    admin/             Owner sign-in and analytics dashboard
-    api/               Validated writes, authentication, protected CSV export
-  components/          Header, Three.js scene, forms, consent, charts
-  content/             profile.ts and projects.ts: edit portfolio facts here
-  lib/                 Validation, server-only Supabase/auth, aggregation
-  proxy.ts             Early anonymous dashboard redirect
-supabase/migrations/   Tables, RLS, atomic rate limits, retention job
-public/resume/         Add your real PDF here
-tests/                 Input validation and HTTP boundary checks
-docs/                  Verification evidence and launch checklist
-```
+Anyone holding a private conversation link can access that thread. The link contains a random 256-bit secret in its URL fragment; only its SHA-256 hash is stored. It is never put in a query string or analytics event. Lost links cannot be recovered automatically. Conversation pages are excluded from indexing and analytics.
 
-Styling and tokens are in `src/app/globals.css`. Fonts are self-hosted through Fontsource; no Google Fonts request is needed. Three.js loads lazily, limits device-pixel ratio, pauses offscreen/in background tabs and has a static SVG fallback. Recharts is used only by the private dashboard. React server components serve the public content. CSS provides responsive behavior, focus states and reduced-motion support.
+## Analytics privacy
 
-## Routes
+Tracking begins only after consent. Records contain timestamps, allowlisted page paths, sanitized referral domains, random per-tab session IDs and approved click types. No raw IP addresses, full user agents or fingerprints are persisted in analytics. Session counts are not unique people. Names are available only from voluntary submissions; this does not identify anonymous visitors.
 
-| Route                                       | Behavior                                                                      |
-| ------------------------------------------- | ----------------------------------------------------------------------------- |
-| `/`                                         | Work, about, toolkit, education, achievements, hackathons, contact            |
-| `/projects/[slug]`                          | Six project case studies, architecture, results and limitations               |
-| `/resume`                                   | Actual PDF preview/download when provided; honest unavailable state otherwise |
-| `/privacy`                                  | Collection, consent, retention and provider disclosure                        |
-| `/guestbook`                                | Optional private professional introduction                                    |
-| `/admin/login`                              | Supabase password login for a verified allowlisted owner                      |
-| `/admin/analytics`                          | Server-protected metrics, charts, tables and date filters                     |
-| `/api/admin/export`                         | Owner-only event CSV without visitor identity fields                          |
-| `/api/contact`, `/api/visit`, `/api/events` | Write-only validated endpoints; GET is rejected                               |
+Owner traffic is excluded server-side and owner login sets portfolio-exclude=true in browser localStorage. Rate limiting uses rotating keyed network hashes separately from analytics. /privacy documents the collection and retention. The daily cron job retains analytics for 90 days and contact/identity records for 180 days; messages cascade-delete with their original contact submission. The conversation retention period runs from its ORIGINAL submission date, not its latest reply.
 
-## Supabase setup
+## Architecture and content
 
-1. Create a Supabase project. Keep the service-role key private.
-2. Run `supabase/migrations/001_portfolio.sql` in the SQL Editor once. All five tables have RLS enabled and all privileges revoked from `anon` and `authenticated`. There are deliberately no public policies. Only server-side service-role operations can access records.
-3. Enable **pg_cron** under Database → Extensions. Run `002_retention.sql` once. Confirm the `portfolio-daily-retention` job is active and inspect `cron.job_run_details` after it runs. Without this step, automatic retention is not active.
-4. Disable public signups in Supabase Auth. Create the owner's email/password account, complete email verification, and copy its user UUID. Use a unique strong password; do not put it in the repository or environment file.
-5. Fill the environment variables below. The application requires BOTH an exact user ID and a verified matching email for every private read/export.
-6. Create a Cloudflare Turnstile widget restricted to your production hostname and local development hostname if desired. Configure both keys. Production contact/visit forms fail closed without Turnstile. Tokens are verified server-side, including hostname.
-7. Rebuild/restart after changing configuration, especially `NEXT_PUBLIC_*` variables.
+- src/app: public pages, project case studies, private dashboard, inbox and API handlers.
+- src/components: navigation, photos, consent, validated forms, charts and conversation UI.
+- src/content: profile.ts, projects.ts and photos.ts are the main editing points.
+- src/lib: validation, owner authorization, aggregation and server-only data access.
+- src/proxy.ts: early anonymous redirects; every private page/API ALSO verifies the owner on the server.
+- supabase/migrations: schema, privacy boundaries, atomic message writes and retention.
+- supabase/functions/portfolio-data: restricted server data bridge.
+- scripts/check-supabase.mjs: live connection/access-boundary checks without printing keys.
+- tests: input validation and configured/unconfigured HTTP boundary checks.
 
-### Environment variables
+Public routes: /, /projects/[slug], /resume, /privacy, /guestbook. Private conversation UI: /messages. Owner routes: /admin/login, /admin/analytics, /admin/messages, /admin/messages/[id].
 
-| Variable                         | Purpose                                                                     |
-| -------------------------------- | --------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL`           | Canonical origin, e.g. `https://your-project.vercel.app`, no trailing slash |
-| `SUPABASE_URL`                   | Project URL from Supabase                                                   |
-| `SUPABASE_ANON_KEY`              | Public anon/publishable key, used server-side for Supabase authentication   |
-| `SUPABASE_SERVICE_ROLE_KEY`      | Secret service-role key, **server only**; never prefix with NEXT_PUBLIC     |
-| `OWNER_EMAIL`                    | Verified owner email; initial value supplied in `.env.example`              |
-| `OWNER_USER_ID`                  | Exact UUID of that Supabase Auth user                                       |
-| `RATE_LIMIT_SECRET`              | Random secret of at least 32 characters                                     |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Public Cloudflare widget key                                                |
-| `TURNSTILE_SECRET_KEY`           | Private Cloudflare verification secret                                      |
-| `NEXT_PUBLIC_ANALYTICS_ENABLED`  | `true` in configured production; `false` for local/test deployments         |
+## Server data access
 
-Generate a rate-limit secret locally using `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`; paste it into `.env.local` and Vercel, never into a commit or chat.
+The current setup uses a scoped **SUPABASE_BRIDGE_SECRET**. Next.js sends authenticated data requests to portfolio-data. The function verifies the secret against a stored hash, restricts resources/methods, and performs the permitted database operation using Supabase's internal service key. The service key never leaves Supabase. The bridge rejects requests without its application credential and forbids access to unrelated tables and credential verifiers.
 
-## Analytics behavior and limitations
+The function has verify_jwt=false because it implements its own server-key authentication. This does NOT make its data public. No CORS access is provided. Do not expose SUPABASE_BRIDGE_SECRET through NEXT_PUBLIC, a browser bundle, Git or logs.
 
-- Tracking starts only after opt-in. It records allowlisted public paths, timestamps, referring **domains**, random per-tab session IDs and approved event types. No query strings, raw IP addresses, full user agents or fingerprints are stored in analytics.
-- Anonymous visits cannot reveal real identities. Sessions are not unique people. Identified-visitor metrics count self-submitted visit records, not verified individuals. Resume downloads count clicks, not successful transfers.
-- Identity records live separately. Only the visit form's additional linking checkbox attaches a consented browser session; this is self-reported, not authentication.
-- Contact messages are stored in the private database; **no email sending provider is installed**. Success means the database accepted a message. Email fallback is always visible.
-- Public endpoints validate origin, JSON content type, streamed body size, schema and consent. Forms have a honeypot, persistent atomic rate limits, and production Turnstile verification.
-- Abuse prevention transiently reads the platform-forwarded network address and stores only an hourly rotating HMAC bucket for at most the cleanup window. It is not attached to analytics. Trust the hosting platform's forwarded headers; custom reverse proxies must overwrite them.
-- Anonymous event ingestion cannot guarantee bot-free statistics. Shared networks can share a rate-limit bucket. Hosting providers may keep separate infrastructure logs.
-- Dashboard queries paginate real records, reject intervals over 366 days and fail visibly when more than 100,000 records per table would be loaded. They never silently truncate summary counts. Recent identity/contact tables show the latest 100 matching submissions. CSV omits identities and session identifiers and protects against spreadsheet-formula injection.
-- Retention: 90 days for analytics; 180 days for contact/identity submissions; rate-limit hashes cleaned after two hours on writes and daily by cron. Backup retention is provider-managed.
+Direct service-role mode remains supported as an alternative if you deliberately configure SUPABASE_SERVICE_ROLE_KEY. Normal deployments should use the already configured bridge credential and leave the service-role variable empty. Public/publishable keys alone cannot read or write the portfolio tables.
 
-### Owner authentication
+## Vercel deployment — remaining step
 
-Visit `/admin/login`. Supabase verifies the password. The access token stays in an HttpOnly, SameSite=Strict cookie (Secure in production); it is never returned to client JavaScript. Each dashboard/export request calls Supabase `getUser` and checks the verified email and user ID. The proxy only provides an early redirect; it is not the authorization boundary. Sessions expire with the Supabase access token, generally around one hour; sign in again. No long-lived refresh token is persisted. Sign-out clears the browser cookie; already issued tokens remain subject to Supabase expiry/revocation behavior.
+The website itself has not been deployed by this chat. The Supabase backend is connected and its Edge Function is deployed. You chose to handle Vercel deployment yourself.
 
-Authenticated owner events are excluded server-side. Owner login also sets local `portfolio-exclude=true`, which remains after logout to exclude your development browser. Remove this localStorage key through browser developer tools when you intentionally want to test normal visitor behavior. Keep analytics disabled in local environments, or use a separate staging database. Never seed fake traffic into production.
+1. Import https://github.com/hanamaraddi9620adi/Portofolio in Vercel with the Next.js preset and repository root.
+2. Copy the values from your LOCAL ignored .env.local into Vercel environment settings. Never paste private keys into chat or GitHub.
+3. Set NEXT_PUBLIC_SITE_URL to your exact public HTTPS origin (no trailing slash). This must match the hostname used for forms and login. Redirect other domain aliases to that canonical domain.
+4. Keep NEXT_PUBLIC_ANALYTICS_ENABLED=true for production; disable it or use a separate database for test previews.
+5. Configure a Cloudflare Turnstile widget for the public hostname. Set NEXT_PUBLIC_TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY. **Production contact/visit forms fail closed until these are configured.** Local development can use the persistent rate limiter and honeypot without a CAPTCHA.
+6. Deploy/redeploy, then test consent, contact receipts, owner login, a private reply, CSV export and anonymous/private data boundaries against the deployed origin.
 
-## Assets you still need to supply
+Required variables:
 
-- Actual resume PDF: `public/resume/hanamaraddi-kanakannavar.pdf`, then rebuild. No resume was fabricated. Until then the resume page offers an email request.
-- Personal portraits are now included. Edit the curated selection in `src/content/photos.ts`. Optional project screenshots can still be supplied.
-- Verified repositories/notebooks for house-price prediction, employee management, Crypto Profit Calculator and PhishShield AI, plus any genuine live-demo URLs. Do not add unverified scores or demos.
+| Variable                       | Value/source                                                            |
+| ------------------------------ | ----------------------------------------------------------------------- |
+| NEXT_PUBLIC_SITE_URL           | Exact site origin; localhost:3100 locally, assigned HTTPS URL in Vercel |
+| SUPABASE_URL                   | Already configured project API URL                                      |
+| SUPABASE_ANON_KEY              | Already configured Supabase publishable key                             |
+| SUPABASE_BRIDGE_SECRET         | Already generated and saved privately in .env.local                     |
+| OWNER_EMAIL                    | Your confirmed Supabase owner email                                     |
+| OWNER_USER_ID                  | Your confirmed Supabase user UUID                                       |
+| RATE_LIMIT_SECRET              | Already generated and saved privately in .env.local                     |
+| NEXT_PUBLIC_ANALYTICS_ENABLED  | true in configured production                                           |
+| NEXT_PUBLIC_TURNSTILE_SITE_KEY | Your Cloudflare widget public key                                       |
+| TURNSTILE_SECRET_KEY           | Your Cloudflare widget secret                                           |
 
-## Deploy to Vercel
+## Recreating the backend in another project
 
-1. Complete the Supabase and Turnstile setup above. Add the resume if ready.
-2. Create a GitHub repository, then commit this project and push it. `.gitignore` excludes `.env.local`, dependencies, build output and scratch files. Review the staged diff before pushing. No repository was created or pushed for you.
-3. In Vercel, choose **Add New → Project**, import that repository and select the Next.js preset. Keep the repository root as the project root. Use `npm run build`, automatic output directory, and a supported Node.js version (22 or 24).
-4. Add all variables from the table in Vercel → Project Settings → Environment Variables. Never expose the service-role key to the client. Set the canonical production origin and `NEXT_PUBLIC_ANALYTICS_ENABLED=true` only after the schema is ready. Keep Preview analytics disabled or use an isolated staging database.
-5. Deploy. If the final Vercel domain was unknown, set `NEXT_PUBLIC_SITE_URL` to the assigned URL, update Turnstile's allowed hostname, and redeploy.
-6. Verify every public route and the resume. In an incognito browser, `/admin/analytics` must redirect and `/api/admin/export` must return 401. An ordinary authenticated Supabase user must also be rejected.
-7. Reject analytics and confirm no event writes; opt in and inspect a real page-view row; change settings to decline and confirm new writes stop. Submit one test contact/visit in a staging database, check real success and owner-only visibility, and verify explicit link consent behavior.
-8. Test anon and ordinary authenticated REST queries directly against each Supabase table: no private records may be returned. Confirm Turnstile rejection and rate-limit behavior. Confirm the retention job executes.
-9. Sign in at `/admin/login`, inspect real empty/data states and download CSV. Follow `docs/LAUNCH-CHECKLIST.md` before announcing the site.
+Inspect existing tables first. For a NEW project apply 001_portfolio.sql, 003_private_conversations.sql, 004_scoped_server_access.sql and 005_rate_limit_hardening.sql, then 002_retention.sql (pg_cron). Do not rerun the initial schema against an existing database.
 
-**Deployment has not been performed.** Supabase, owner authentication, Turnstile and live analytics remain unconfigured because no credentials were supplied. Their real-provider success paths and RLS behavior must be checked after setup.
+Deploy the portfolio-data Edge Function; provision a freshly generated application secret and store ONLY its SHA-256 verifier in portfolio_server_credentials. Store the raw secret only in the Next.js server environment. Update supabase/config.toml to the intended project before using the CLI. Alternatively use direct service-role mode and omit the bridge. Never retrieve or expose the platform service key through a public function.
 
-## Checks
+To revoke the bridge, mark its credential row revoked=true in the Supabase SQL Editor. Rotation requires replacing both the verifier and the Next.js environment value. Existing schema/credentials should not be recreated on routine Vercel deployments.
 
-```powershell
-npm.cmd run lint
-npm.cmd run typecheck
-npm.cmd test
-npm.cmd run build
-# Run the HTTP tests against a separate running, unconfigured local preview:
-$env:TEST_BASE_URL='http://localhost:3100'
-npm.cmd test
-```
+## Verification
 
-The HTTP test intentionally expects missing-provider errors. Do not point it at configured production. With no `TEST_BASE_URL`, only the HTTP suite is skipped; validation tests still run. See `docs/VERIFICATION.md` for actual results and verification limits.
+Run npm run lint, npm run typecheck, npm test and npm run build. Run **npm run check:supabase** locally to verify real server access, blocked public reads and bridge restrictions. The configured HTTP suite uses TEST_CONFIGURED_BASE_URL=http://localhost:3100. The legacy unconfigured HTTP suite requires TEST_BASE_URL and expects missing-provider errors; do not run it against this connected setup. No test visitor records are intentionally retained.
 
-The production dependency audit passed with zero vulnerabilities at implementation time. The full audit reports five dependency-chain advisories arising from `braces` through Next.js ESLint's `fast-glob` dependency (GHSA-vfj7-8cjw-p6xm). Registry latest `braces` was 3.0.3 with no patched release available. Automatic forced remediation would downgrade `eslint-config-next` to 14.x, so it was not applied. This is development lint tooling, not production runtime; review upstream updates before launch.
+See docs/VERIFICATION.md and docs/LAUNCH-CHECKLIST.md. The Supabase security advisor reports RLS-without-policy informational notices; these are intentional because all public grants are revoked. Its existing leaked-password-protection setting is disabled; review the provider's account setting: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection.
 
-## Content verification
+The runtime dependency audit previously passed. Development lint tooling has an upstream braces dependency advisory; see the verification report. It was not remediated by forcing an incompatible framework downgrade.
 
-See `docs/CONTENT-SOURCES.md`. LinkedIn returned HTTP 429, so professional facts use the supplied master prompt. Representative source files and READMEs were inspected for the additional GitHub candidates; the projects themselves were not executed. No employment, skill percentages, performance metrics, live URLs or financial returns were invented.
+## Assets and limitations
+
+- Add your actual PDF at public/resume/hanamaraddi-kanakannavar.pdf and rebuild. Until then the resume page offers an email request.
+- Personal photographs are supplied originals. The card tilt is a photo-depth effect, not a reconstructed 3D face.
+- Unsupported project scores, unverified live demos and financial returns are not published. See docs/CONTENT-SOURCES.md.
+- Owner login expires with the Supabase access token; sign in again after expiry. No long-lived refresh token is persisted. Legacy contact records created before private inboxes must be answered by their supplied email address.
+- Message replies are visible through the private link; email notifications and account-based link recovery are not configured.

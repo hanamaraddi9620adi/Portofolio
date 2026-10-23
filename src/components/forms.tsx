@@ -19,6 +19,7 @@ export function PublicForm({
   const [busy, setBusy] = useState(false),
     [message, setMessage] = useState(""),
     [ok, setOk] = useState(false);
+  const [inboxLink, setInboxLink] = useState("");
   const widget = useRef<HTMLDivElement>(null),
     widgetId = useRef<string | undefined>(undefined);
   const key = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
@@ -61,7 +62,13 @@ export function PublicForm({
             : "Your professional visit has been saved privately. Thank you."
           : result.error || "Unable to save. Please try email.",
       );
-      if (response.ok) form.reset();
+      if (response.ok) {
+        form.reset();
+        if (kind === "contact" && result.inboxAccess)
+          setInboxLink(
+            window.location.origin + "/messages#" + result.inboxAccess,
+          );
+      }
     } catch {
       setOk(false);
       setMessage("Connection interrupted. Please try again or use email.");
@@ -176,6 +183,29 @@ export function PublicForm({
       <p role="status" className={ok ? "form-success" : "form-status"}>
         {message}
       </p>
+      {inboxLink && (
+        <div className="inbox-receipt">
+          <strong>Keep the conversation going.</strong>
+          <p>
+            Your private link lets you read my replies and respond. Save it now;
+            it cannot be recovered from this browser after you leave. Anyone
+            with the link can read this conversation. No email notification is
+            sent.
+          </p>
+          <a className="button primary" href={inboxLink}>
+            Open your private conversation ↗
+          </a>
+          <label>
+            Save this private link
+            <input
+              readOnly
+              aria-label="Private conversation link"
+              value={inboxLink}
+              onFocus={(e) => e.currentTarget.select()}
+            />
+          </label>
+        </div>
+      )}
     </form>
   );
 }

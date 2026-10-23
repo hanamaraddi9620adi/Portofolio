@@ -18,3 +18,7 @@
 - [ ] Check desktop, tablet and mobile; test keyboard focus and OS reduced-motion setting.
 - [ ] Review retention/privacy notice against actual deployment/provider settings.
 - [ ] Deploy on Vercel and repeat checks against the production hostname.
+
+## Connected Supabase status — 23 October 2026
+
+Project, database schema, scoped server function, confirmed owner allowlist, access-boundary checks, private replies and retention schedule are complete. Before deploying on Vercel, copy the private values from .env.local into Vercel settings, set the final canonical origin and configure production Turnstile keys. Do not rerun initial migrations on the connected project. See README.md for the current setup; earlier unchecked items above are historical launch prompts.

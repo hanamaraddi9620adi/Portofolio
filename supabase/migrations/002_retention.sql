@@ -1,3 +1,4 @@
+create extension if not exists pg_cron;
 -- Enable the pg_cron extension via Database > Extensions first.
 select cron.schedule('portfolio-daily-retention','15 2 * * *',$$
  delete from public.page_views where created_at < now()-interval '90 days';

@@ -33,6 +33,7 @@ export function AnalyticsConsent() {
     if (
       choice !== "yes" ||
       path.startsWith("/admin") ||
+      path === "/messages" ||
       process.env.NEXT_PUBLIC_ANALYTICS_ENABLED !== "true"
     )
       return;

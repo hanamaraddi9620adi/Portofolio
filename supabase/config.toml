@@ -1,0 +1,5 @@
+project_id = "rorrpbyiyycnbbemjiio"
+
+[functions.portfolio-data]
+verify_jwt = false
+# Authentication is enforced by the function with a scoped server-only key.

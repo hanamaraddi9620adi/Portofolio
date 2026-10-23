@@ -48,6 +48,18 @@ export default function Privacy() {
         Submitting the form does not subscribe you to a mailing list. A success
         message means the submission was saved, not that an email was delivered.
       </p>
+      <h2>Private conversations</h2>
+      <p>
+        After a contact submission, a private link lets you read owner replies
+        and send follow-up messages. Anyone holding that link can access the
+        conversation, so do not share it. The access code is kept in the URL
+        fragment and sent to the server only in request bodies. Only a one-way
+        hash of it is stored. Private conversation pages are excluded from
+        analytics and search indexing. Replies are stored privately with the
+        original message and removed with it after the original 180-day
+        retention period. There are no email notifications or account recovery
+        for lost links.
+      </p>
       <h2>Security and service providers</h2>
       <p>
         Supabase provides database storage and owner authentication when

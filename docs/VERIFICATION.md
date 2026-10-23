@@ -27,4 +27,17 @@ Public and HTTP checks ran locally with external services unconfigured. No fake 
 Production server smoke check also passed: homepage/resume returned 200; anonymous dashboard returned 307; export returned 401. The production homepage was inspected and its screenshot saved in the handoff outputs. Client build assets contained no references to private service-role, rate-limit or Turnstile secret environment names.
 
 ## Personal photo update
+
 Added three original user-supplied photographs, a perspective-tilt hero card and keyboard-accessible About gallery. Lint, TypeScript and production build passed. Browser inspection confirmed mobile framing and gallery switching. Desktop 1280 and tablet 768 previews showed no horizontal overflow (1265/1265 and 753/753 after scrollbars). Original photo URLs and the Next Image optimization endpoint returned 200. Reduced-motion disables the card transform in CSS and the pointer handler. No AI face edits or reconstructed 3D mesh were made. Temporary QA page removed.
+
+## Supabase and private conversations — 23 October 2026
+
+Created the user-approved Portofolio project in Mumbai at a quoted $0/month. Applied analytics/contact schema, private conversations, scoped server credentials, rate-limit hardening and daily retention. Deployed the portfolio-data Edge Function with explicit server-key authentication. Configured the local ignored environment and verified the owner's confirmed email/UUID allowlist.
+
+Live checks passed: service-side storage requests succeed; anon direct reads are blocked for all portfolio data tables; the bridge rejects absent credentials and unrelated resources. A temporary contact produced a private link, correct access read its messages, an invalid link was rejected, visitor replies were stored once across duplicate requests, the public owner API was rejected, a no-consent event was rejected, a consented view was stored, and explicit identity/session linking was stored. The owner signed in through the actual UI; analytics and the inbox displayed the test records. Temporary test data is removed after validation. No credentials are included in the report.
+
+The security advisor's no-policy notices are expected with this deny-by-default server-only design. Leaked password protection is disabled in the new project's provider settings: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection. This setting was not silently changed.
+
+Previous missing-provider verification limits are historical; the current Supabase connection is real. Vercel deployment and production Turnstile configuration remain user steps. No claim of email notification delivery is made.
+
+Final connected run: lint, TypeScript and production build passed. The configured test run passed 9 tests, with only the legacy missing-provider HTTP suite skipped. The signed-in owner sent a reply through the actual UI; the visitor API retrieved it. Closing the thread rejected further replies. Database inspection confirmed RLS and denied anon/authenticated SELECT grants on all seven application tables, plus an active daily retention job. The labelled test contact (and both replies), test professional visit and test page view were removed by their generated IDs/session. The owner inbox was checked empty afterward.

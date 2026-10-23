@@ -1,19 +1,33 @@
 import "server-only";
+import { scopedStorageFetch } from "./supabase-transport";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { createHmac } from "node:crypto";
 export const configured = () =>
   Boolean(
     process.env.SUPABASE_URL &&
-    process.env.SUPABASE_SERVICE_ROLE_KEY &&
+    (process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.SUPABASE_BRIDGE_SECRET) &&
     process.env.SUPABASE_ANON_KEY,
   );
 export function database() {
   if (!configured()) throw new Error("Storage is not configured");
   return createClient(
     process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { persistSession: false, autoRefreshToken: false } },
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY!,
+    {
+      auth: { persistSession: false, autoRefreshToken: false },
+      ...(process.env.SUPABASE_SERVICE_ROLE_KEY
+        ? {}
+        : {
+            global: {
+              fetch: scopedStorageFetch(
+                process.env.SUPABASE_URL!,
+                process.env.SUPABASE_BRIDGE_SECRET!,
+              ),
+            },
+          }),
+    },
   );
 }
 export function authClient() {

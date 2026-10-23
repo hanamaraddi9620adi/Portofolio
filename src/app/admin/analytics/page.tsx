@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { owner } from "@/lib/server";
 import { analyticsData, counts, RecordRow } from "@/lib/analytics";
@@ -185,7 +186,12 @@ export default async function Analytics({
             Portfolio <span className="serif">insights.</span>
           </h1>
         </div>
-        <Logout />
+        <div className="hero-actions">
+          <Link className="button" href="/admin/messages">
+            Open message inbox ↗
+          </Link>
+          <Logout />
+        </div>
       </div>
       <p>
         Only consented visits are counted. Browser sessions and self-submitted
