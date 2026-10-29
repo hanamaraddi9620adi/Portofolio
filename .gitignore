@@ -7,6 +7,3 @@ work/
 out/
 
 .vercel/
-
-.vercel
-.env*
