@@ -18,7 +18,7 @@ Double-click **START-PORTFOLIO.cmd**, then open **http://localhost:3100**. The l
 
 ## Where you see visitors and messages
 
-1. Sign in at **/admin/login** using your Supabase owner email/password.
+1. Sign in at **/admin/login** using the email/password created for this portfolio's owner account. If forgotten, choose **Forgot password? Send a recovery email**, open the latest email and choose a new password on **/admin/reset-password**. This is a separate account from the Supabase dashboard login.
 2. **/admin/analytics** shows real consented page views, unique browser sessions, project engagement, referral domains, voluntary professional visits and contact submissions. Date filters and private CSV export are included.
 3. Choose **Open message inbox** or visit **/admin/messages**. Open a conversation to read and reply; close/reopen it as needed. New visitor replies return the conversation to Awaiting reply.
 4. Visitors submit the contact form, then receive a private **/messages#...** link. Saving that link lets them read your reply and write back without an account. Replies refresh every 20 seconds while the tab is visible. There are no email notifications.
@@ -62,7 +62,8 @@ The website itself has not been deployed by this chat. The Supabase backend is c
 3. Set NEXT_PUBLIC_SITE_URL to your exact public HTTPS origin (no trailing slash). This must match the hostname used for forms and login. Redirect other domain aliases to that canonical domain.
 4. Keep NEXT_PUBLIC_ANALYTICS_ENABLED=true for production; disable it or use a separate database for test previews.
 5. Contact/visit forms use signed, expiring, single-use form tokens, a honeypot, same-origin checks and persistent rate limits. Cloudflare Turnstile is optional: configure both NEXT_PUBLIC_TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY together for additional protection. A partially configured integration fails closed.
-6. Deploy/redeploy, then test consent, contact receipts, owner login, a private reply, CSV export and anonymous/private data boundaries against the deployed origin.
+6. In Supabase Authentication → URL Configuration, set Site URL to the public origin and allow the exact HTTPS **/admin/reset-password** redirect. Recovery credentials remain in browser memory, are removed from the address bar, and are verified with Supabase and the owner allowlist before changing a password. No signup or broader dashboard access is granted by recovery.
+7. Deploy/redeploy, then test consent, contact receipts, owner login/recovery, a private reply, CSV export and anonymous/private data boundaries against the deployed origin.
 
 Required variables:
 
