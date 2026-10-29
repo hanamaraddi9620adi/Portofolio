@@ -8,7 +8,7 @@ export default function Privacy() {
         Privacy, <span className="serif">by intent.</span>
       </h1>
       <p>
-        Last updated: 22 October 2026. This portfolio is operated by{" "}
+        Last updated: 29 October 2026. This portfolio is operated by{" "}
         {profile.name} in Bengaluru, India.
       </p>
       <h2>Optional analytics</h2>
@@ -63,13 +63,14 @@ export default function Privacy() {
       <h2>Security and service providers</h2>
       <p>
         Supabase provides database storage and owner authentication when
-        configured. Vercel may host this site. Cloudflare Turnstile protects
-        production forms and may process device and network information for
-        fraud prevention. Infrastructure providers may retain operational logs
-        under their own policies. The application temporarily stores a rotating,
-        keyed network hash for rate limiting; it is not used to identify
-        visitors or correlate analytics. No raw address is persisted by
-        application code.
+        configured. Vercel hosts this site. Forms use short-lived, single-use
+        signed verification tokens, a hidden spam field and persistent rate
+        limits. If Cloudflare Turnstile is configured, it supplies an additional
+        challenge and may process device and network information for fraud
+        prevention. Infrastructure providers may retain operational logs under
+        their own policies. The application temporarily stores a rotating, keyed
+        network hash for rate limiting; it is not used to identify visitors or
+        correlate analytics. No raw address is persisted by application code.
       </p>
       <h2>Retention</h2>
       <p>

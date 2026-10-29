@@ -88,7 +88,9 @@ export function AnalyticsConsent() {
             <strong>A little insight. Only with your permission.</strong>
             <p>
               Allow anonymous page and click counts? No fingerprints or IP
-              storage. <Link href="/privacy">Details</Link>
+              storage. <Link href="/privacy">Details</Link> Want to introduce
+              yourself?{" "}
+              <Link href="/guestbook">Leave a professional visit</Link>.
             </p>
           </div>
           <div className="consent-actions">

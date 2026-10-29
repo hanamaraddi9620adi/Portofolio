@@ -61,7 +61,7 @@ The website itself has not been deployed by this chat. The Supabase backend is c
 2. Copy the values from your LOCAL ignored .env.local into Vercel environment settings. Never paste private keys into chat or GitHub.
 3. Set NEXT_PUBLIC_SITE_URL to your exact public HTTPS origin (no trailing slash). This must match the hostname used for forms and login. Redirect other domain aliases to that canonical domain.
 4. Keep NEXT_PUBLIC_ANALYTICS_ENABLED=true for production; disable it or use a separate database for test previews.
-5. Configure a Cloudflare Turnstile widget for the public hostname. Set NEXT_PUBLIC_TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY. **Production contact/visit forms fail closed until these are configured.** Local development can use the persistent rate limiter and honeypot without a CAPTCHA.
+5. Contact/visit forms use signed, expiring, single-use form tokens, a honeypot, same-origin checks and persistent rate limits. Cloudflare Turnstile is optional: configure both NEXT_PUBLIC_TURNSTILE_SITE_KEY and TURNSTILE_SECRET_KEY together for additional protection. A partially configured integration fails closed.
 6. Deploy/redeploy, then test consent, contact receipts, owner login, a private reply, CSV export and anonymous/private data boundaries against the deployed origin.
 
 Required variables:
@@ -76,8 +76,8 @@ Required variables:
 | OWNER_USER_ID                  | Your confirmed Supabase user UUID                                       |
 | RATE_LIMIT_SECRET              | Already generated and saved privately in .env.local                     |
 | NEXT_PUBLIC_ANALYTICS_ENABLED  | true in configured production                                           |
-| NEXT_PUBLIC_TURNSTILE_SITE_KEY | Your Cloudflare widget public key                                       |
-| TURNSTILE_SECRET_KEY           | Your Cloudflare widget secret                                           |
+| NEXT_PUBLIC_TURNSTILE_SITE_KEY | Optional Cloudflare widget public key (requires matching secret)        |
+| TURNSTILE_SECRET_KEY           | Optional Cloudflare widget secret                                       |
 
 ## Recreating the backend in another project
 

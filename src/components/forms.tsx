@@ -1,7 +1,7 @@
 "use client";
 import Script from "next/script";
 import Link from "next/link";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 declare global {
   interface Window {
@@ -23,6 +23,47 @@ export function PublicForm({
   const widget = useRef<HTMLDivElement>(null),
     widgetId = useRef<string | undefined>(undefined);
   const key = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+  const [formToken, setFormToken] = useState("");
+  const [verificationError, setVerificationError] = useState("");
+  const [checking, setChecking] = useState(!key);
+  const refreshToken = useCallback(async () => {
+    if (key) return;
+    setChecking(true);
+    try {
+      const response = await fetch("/api/forms/challenge", {
+        cache: "no-store",
+      });
+      const result = await response.json();
+      if (!response.ok || !result.token)
+        throw new Error(result.error || "Unable to prepare the form.");
+      setFormToken(result.token);
+      setVerificationError("");
+    } catch (error) {
+      setFormToken("");
+      setVerificationError(
+        error instanceof Error
+          ? error.message
+          : "Unable to prepare the form. Please use email.",
+      );
+    } finally {
+      setChecking(false);
+    }
+  }, [key]);
+  useEffect(() => {
+    const initial = setTimeout(() => {
+      void refreshToken();
+    }, 0);
+    const interval = setInterval(
+      () => {
+        if (!document.hidden) void refreshToken();
+      },
+      10 * 60 * 1000,
+    );
+    return () => {
+      clearTimeout(initial);
+      clearInterval(interval);
+    };
+  }, [refreshToken]);
   function renderWidget() {
     if (key && widget.current && window.turnstile && !widgetId.current)
       widgetId.current = window.turnstile.render(widget.current, {
@@ -37,16 +78,22 @@ export function PublicForm({
     const form = e.currentTarget;
     const fields = Object.fromEntries(new FormData(form));
     try {
+      let sessionId: string | undefined;
+      try {
+        if (
+          fields.linkSession === "on" &&
+          localStorage.getItem("analytics-consent") === "yes"
+        )
+          sessionId = sessionStorage.getItem("portfolio-session") || undefined;
+      } catch {
+        /* Browsing with storage blocked can still submit a message. */
+      }
       const payload = {
         ...fields,
         consent: fields.consent === "on",
         linkSession: fields.linkSession === "on",
-        sessionId:
-          fields.linkSession === "on" &&
-          localStorage.getItem("analytics-consent") === "yes"
-            ? sessionStorage.getItem("portfolio-session")
-            : undefined,
-        token: fields["cf-turnstile-response"] || "",
+        sessionId,
+        token: key ? fields["cf-turnstile-response"] || "" : formToken,
       };
       const response = await fetch(`/api/${kind}`, {
         method: "POST",
@@ -75,6 +122,7 @@ export function PublicForm({
     } finally {
       setBusy(false);
       if (widgetId.current) window.turnstile?.reset(widgetId.current);
+      if (!key) void refreshToken();
     }
   }
   return (
@@ -172,12 +220,30 @@ export function PublicForm({
           <div ref={widget} />
         </>
       )}
-      <button className="button primary" disabled={busy}>
+      {verificationError && (
+        <div role="alert" className="form-status">
+          {verificationError}{" "}
+          <button
+            type="button"
+            className="button small"
+            disabled={checking}
+            onClick={() => void refreshToken()}
+          >
+            Retry form
+          </button>
+        </div>
+      )}
+      <button
+        className="button primary"
+        disabled={busy || (!key && (checking || !formToken))}
+      >
         {busy
           ? "Saving…"
-          : kind === "contact"
-            ? "Send message"
-            : "Leave a professional visit"}
+          : checking
+            ? "Preparing form…"
+            : kind === "contact"
+              ? "Send message"
+              : "Leave a professional visit"}
         <ArrowUpRight size={17} />
       </button>
       <p role="status" className={ok ? "form-success" : "form-status"}>

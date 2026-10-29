@@ -146,6 +146,11 @@ export default async function Analytics({
     );
   }
   const { views, events, visitors, contacts } = data;
+  const introductions = new Map(
+    visitors
+      .filter((v) => v.link_consent && v.session_id)
+      .map((v) => [v.session_id!, v]),
+  );
   const daily = new Map<string, number>();
   for (
     let t = new Date(range.start).getTime();
@@ -198,6 +203,22 @@ export default async function Analytics({
         identities are not verified unique people. Authenticated owner traffic
         is excluded.
       </p>
+      <div className="analytics-explainer">
+        <strong>
+          {process.env.NEXT_PUBLIC_ANALYTICS_ENABLED === "true"
+            ? "Tracking is enabled"
+            : "Tracking is disabled in this deployment"}
+        </strong>
+        <p>
+          Visits appear after a visitor allows analytics. Names appear when
+          someone submits a professional introduction and agrees to link it to
+          their visit. Other visits are shown as anonymous; contact names appear
+          in your inbox.
+        </p>
+        <Link className="text-link" href="/guestbook">
+          Open the visitor introduction form ↗
+        </Link>
+      </div>
       <form className="filters">
         <label>
           Quick range
@@ -273,7 +294,52 @@ export default async function Analytics({
           "path",
         )}
       />
-      <h2>Recent professional visits</h2>
+      <h2>Recent website visits</h2>
+      {views.length ? (
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Visited (UTC)</th>
+                <th>Visitor</th>
+                <th>Page</th>
+                <th>Referral</th>
+              </tr>
+            </thead>
+            <tbody>
+              {views.slice(0, 100).map((view) => {
+                const person = introductions.get(view.session_id || "");
+                return (
+                  <tr key={view.id}>
+                    <td>
+                      {new Date(view.created_at)
+                        .toISOString()
+                        .slice(0, 16)
+                        .replace("T", " ")}
+                    </td>
+                    <td>
+                      {person?.name || "Anonymous visitor"}
+                      {person?.company && (
+                        <>
+                          <br />
+                          {person.company}
+                        </>
+                      )}
+                    </td>
+                    <td>{view.path}</td>
+                    <td>{view.referrer || "Direct / unknown"}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="empty">
+          No consented visits in this date range yet. Owner visits are excluded.
+        </p>
+      )}
+      <h2>Visitors who introduced themselves</h2>
       <p>
         Latest 100 submissions in the selected interval. Details remain private.
       </p>

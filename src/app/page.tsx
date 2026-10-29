@@ -303,6 +303,16 @@ export default function Home() {
               GitHub ↗
             </a>
           </div>
+          <div className="visitor-intro">
+            <strong>Just visiting?</strong>
+            <p>
+              You can leave a professional introduction without sending a
+              message. Your name and details are shared privately with me.
+            </p>
+            <Link className="text-link" href="/guestbook">
+              Leave a professional visit ↗
+            </Link>
+          </div>
           <span className="micro">
             <i className="status-dot" /> BASED IN BENGALURU · OPEN TO
             OPPORTUNITIES

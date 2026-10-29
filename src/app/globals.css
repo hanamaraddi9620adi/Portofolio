@@ -1051,6 +1051,19 @@ textarea::placeholder {
 .chart-panel h2 {
   font-size: 24px;
 }
+.visitor-intro,
+.analytics-explainer {
+  margin: 1.5rem 0;
+  padding: 1.2rem 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(117, 211, 180, 0.05);
+}
+.visitor-intro a,
+.analytics-explainer a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 .table-wrap {
   overflow: auto;
   margin: 30px 0;

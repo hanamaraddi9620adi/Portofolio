@@ -55,6 +55,7 @@ export default function RootLayout({
             </a>
             <Link href="/privacy">Privacy</Link>
             <Link href="/guestbook">Leave a visit</Link>
+            <Link href="/admin/analytics">Owner dashboard</Link>
           </div>
           <span className="micro">
             © {new Date().getFullYear()} HANAMARADDI K.

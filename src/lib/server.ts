@@ -3,6 +3,7 @@ import { scopedStorageFetch } from "./supabase-transport";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { createHmac } from "node:crypto";
+import { formTokenBucket, validFormToken } from "./form-protection";
 export const configured = () =>
   Boolean(
     process.env.SUPABASE_URL &&
@@ -116,10 +117,35 @@ export async function rateLimit(req: Request, bucket: string, limit: number) {
 }
 export async function verifyHuman(token?: string) {
   if (!process.env.TURNSTILE_SECRET_KEY) {
-    if (process.env.NODE_ENV === "production")
+    const secret = process.env.RATE_LIMIT_SECRET;
+    if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
       throw new ApiError(
-        "The form is not connected yet. Please use email.",
+        "Form verification is temporarily misconfigured. Please use email.",
         503,
+      );
+    if (!secret || secret.length < 32)
+      throw new ApiError(
+        "Form verification is unavailable. Please use email.",
+        503,
+      );
+    if (!token || !validFormToken(token, secret))
+      throw new ApiError(
+        "Form verification expired. Please retry your message.",
+        400,
+      );
+    const { data, error } = await database().rpc("take_rate_limit", {
+      bucket_key: formTokenBucket(token),
+      max_hits: 1,
+    });
+    if (error)
+      throw new ApiError(
+        "Form verification is temporarily unavailable. Please try again.",
+        503,
+      );
+    if (!data)
+      throw new ApiError(
+        "This form verification was already used. Please try again.",
+        409,
       );
     return;
   }
