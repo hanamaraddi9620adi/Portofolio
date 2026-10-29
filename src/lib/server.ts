@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { createHmac } from "node:crypto";
 import { formTokenBucket, validFormToken } from "./form-protection";
+import { isAllowedOwner } from "./owner-access";
 export const configured = () =>
   Boolean(
     process.env.SUPABASE_URL &&
@@ -46,9 +47,7 @@ export async function owner() {
   const { data, error } = await authClient().auth.getUser(token);
   const u = data.user;
   return !error &&
-    u?.email_confirmed_at &&
-    u.id === process.env.OWNER_USER_ID &&
-    u.email?.toLowerCase() === process.env.OWNER_EMAIL.toLowerCase()
+    isAllowedOwner(u, process.env.OWNER_USER_ID, process.env.OWNER_EMAIL)
     ? u
     : null;
 }

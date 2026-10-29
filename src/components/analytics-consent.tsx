@@ -32,6 +32,8 @@ export function AnalyticsConsent() {
   useEffect(() => {
     if (
       choice !== "yes" ||
+      new URLSearchParams(window.location.hash.slice(1)).get("type") ===
+        "recovery" ||
       path.startsWith("/admin") ||
       path === "/messages" ||
       process.env.NEXT_PUBLIC_ANALYTICS_ENABLED !== "true"

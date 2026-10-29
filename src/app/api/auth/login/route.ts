@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { z } from "zod";
+import { isAllowedOwner } from "@/lib/owner-access";
 import {
   ApiError,
   authClient,
@@ -43,9 +44,11 @@ export async function POST(req: Request) {
       );
     }
     if (
-      !data.user?.email_confirmed_at ||
-      data.user.id !== process.env.OWNER_USER_ID ||
-      data.user.email?.toLowerCase() !== process.env.OWNER_EMAIL.toLowerCase()
+      !isAllowedOwner(
+        data.user,
+        process.env.OWNER_USER_ID,
+        process.env.OWNER_EMAIL,
+      )
     )
       throw new ApiError(
         "This account does not have owner access to this portfolio.",

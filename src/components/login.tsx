@@ -5,6 +5,33 @@ export function Login({ email = "" }: { email?: string }) {
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const router = useRouter();
+  const [recoveryBusy, setRecoveryBusy] = useState(false);
+  const [recoveryMessage, setRecoveryMessage] = useState("");
+  async function recover() {
+    setRecoveryBusy(true);
+    setRecoveryMessage("");
+    try {
+      const response = await fetch("/api/auth/recover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(result.error || "Unable to send recovery email.");
+      setRecoveryMessage(
+        "If this is the owner email, a recovery link has been sent. Check your inbox and spam folder, and open the latest email.",
+      );
+    } catch (error) {
+      setRecoveryMessage(
+        error instanceof Error
+          ? error.message
+          : "Connection interrupted. Please try again.",
+      );
+    } finally {
+      setRecoveryBusy(false);
+    }
+  }
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
@@ -60,6 +87,14 @@ export function Login({ email = "" }: { email?: string }) {
       </button>
       <p role="alert" className="form-status">
         {error}
+      </p>
+      <button type="button" onClick={recover} disabled={recoveryBusy}>
+        {recoveryBusy
+          ? "Sending recovery email…"
+          : "Forgot password? Send a recovery email"}
+      </button>
+      <p role="status" className="form-status">
+        {recoveryMessage}
       </p>
     </form>
   );

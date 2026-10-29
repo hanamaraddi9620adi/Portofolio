@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Header } from "@/components/header";
 import { AnalyticsConsent } from "@/components/analytics-consent";
+import { RecoveryRedirect } from "@/components/password-recovery";
 import { profile } from "@/content/profile";
 import "./globals.css";
 export const metadata: Metadata = {
@@ -34,6 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <RecoveryRedirect />
         <a className="skip-link" href="#main">
           Skip to content
         </a>
