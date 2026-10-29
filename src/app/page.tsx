@@ -108,7 +108,7 @@ export default function Home() {
               key={p.slug}
               className={`project-card ${i === 0 ? "featured" : ""}`}
             >
-              <ProjectArt kind={p.art} />
+              <ProjectArt kind={p.art} image={p.image} />
               <div className="project-info">
                 <div className="micro project-category">
                   <span>
@@ -140,7 +140,10 @@ export default function Home() {
         </div>
         <details className="repo-exploration">
           <summary>
-            More explorations on GitHub <span>05 repositories ↗</span>
+            More explorations on GitHub{" "}
+            <span>
+              {String(repositoryNotes.length).padStart(2, "0")} repositories ↗
+            </span>
           </summary>
           <div className="repo-list">
             {repositoryNotes.map((r) => (

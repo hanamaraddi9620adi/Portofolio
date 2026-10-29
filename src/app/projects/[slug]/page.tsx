@@ -36,9 +36,69 @@ export default async function Project({
           <span key={s}>{s}</span>
         ))}
       </div>
+      {(p.demo || p.video) && (
+        <div className="hero-actions project-actions">
+          {p.demo && (
+            <a
+              className="button primary"
+              href={p.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open live app ↗
+            </a>
+          )}
+          {p.video && (
+            <a className="button outline" href="#walkthrough">
+              Watch walkthrough ↓
+            </a>
+          )}
+        </div>
+      )}
       <div className="case-banner">
-        <ProjectArt kind={p.art} />
+        <ProjectArt kind={p.art} image={p.image} />
       </div>
+      {p.video && (
+        <section
+          className="video-walkthrough"
+          id="walkthrough"
+          aria-labelledby="walkthrough-title"
+        >
+          <div className="walkthrough-heading">
+            <div>
+              <p className="eyebrow">
+                PRODUCT IN PRACTICE / {p.video.duration} MIN
+              </p>
+              <h2 id="walkthrough-title">
+                A closer look at <span className="serif">{p.title}.</span>
+              </h2>
+            </div>
+            <a className="text-link" href={p.video.src} download>
+              Download walkthrough ↓
+            </a>
+          </div>
+          <p>{p.video.description}</p>
+          <video
+            controls
+            playsInline
+            preload="none"
+            poster={p.video.poster}
+            aria-label={`${p.title} project walkthrough`}
+            aria-describedby="walkthrough-description"
+          >
+            <source src={p.video.src} type="video/mp4" />
+            Your browser does not support embedded video.{" "}
+            <a href={p.video.src}>Open the walkthrough video</a>.
+          </video>
+          <p className="video-description" id="walkthrough-description">
+            Recorded product demonstration · Full audio retained · Playback
+            starts when you press play.
+          </p>
+          {p.demoAccessNote && (
+            <p className="demo-access-note">{p.demoAccessNote}</p>
+          )}
+        </section>
+      )}
       <div className="case-grid">
         <div className="case-body">
           <section>
@@ -103,13 +163,24 @@ export default async function Project({
             <p>Source link not available yet.</p>
           )}
           {p.demo && (
-            <a className="button" href={p.demo}>
+            <a
+              className="button"
+              href={p.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Live demo ↗
             </a>
           )}
+          {p.video && (
+            <a className="button" href="#walkthrough">
+              Watch walkthrough ↓
+            </a>
+          )}
           <p style={{ marginTop: 24 }}>
-            Technical artwork is an original conceptual illustration, not a
-            screenshot or measured project output.
+            {p.image
+              ? "Project image captured from the supplied product recording."
+              : "Technical artwork is an original conceptual illustration, not a screenshot or measured project output."}
           </p>
         </aside>
       </div>

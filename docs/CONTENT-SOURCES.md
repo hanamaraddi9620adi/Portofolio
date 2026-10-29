@@ -34,3 +34,9 @@ No third-party ThreeUI integration was selected. Consequently no canonical sourc
 ## Supplied personal photography update
 
 The user subsequently supplied personal photos. The portfolio now uses 1000080354.jpg for the hero, the supplied white-shirt event PNG for the About gallery, and 1000064962 - Copy.jpg as a full-length gallery option. Originals were copied unchanged into public/images; responsive display uses Next Image. No face generation, skin-tone filter, event attribution or 3D reconstruction is claimed. The hero's depth effect is CSS perspective applied to the photo card.
+
+## SwingLens deployment and walkthrough update — 29 October 2026
+
+SwingLens is now a dedicated case study and selected-work card. The user confirmed https://swinglens-cyan.vercel.app/ as the public application URL; it returned HTTP 200 with the SwingLens title and no Vercel login redirect. The initially supplied per-deployment URL redirected to Vercel authentication and is not used as the live-app button.
+
+The user supplied Screen Recording 2026-10-24 123046.mp4. Original size: 527,302,324 bytes. The published H.264/AAC web copy is 11,878,328 bytes at 1280 × 768 and 446.401 seconds, retaining the full timeline and audio. The original remains untouched. The screenshot/poster is captured from the SwingLens interface at 90 seconds. The video is committed as a public portfolio asset with native controls, no autoplay, preload="none", a download link, and a descriptive project overview. No captions or verbatim transcript were supplied or fabricated.

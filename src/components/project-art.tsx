@@ -1,4 +1,15 @@
-export function ProjectArt({ kind }: { kind: string }) {
+import Image from "next/image";
+
+export function ProjectArt({ kind, image }: { kind: string; image?: string }) {
+  if (image) {
+    return (
+      <div className="project-art screenshot" aria-hidden="true">
+        <Image src={image} alt="" fill sizes="(max-width: 700px) 88vw, 600px" />
+        <span className="art-label">SWINGLENS / PRODUCT WALKTHROUGH</span>
+        <span className="art-corner">WATCH THE DEMO ↗</span>
+      </div>
+    );
+  }
   return (
     <div className={`project-art ${kind}`} aria-hidden="true">
       <span className="art-label">

@@ -41,3 +41,9 @@ The security advisor's no-policy notices are expected with this deny-by-default 
 Previous missing-provider verification limits are historical; the current Supabase connection is real. Vercel deployment and production Turnstile configuration remain user steps. No claim of email notification delivery is made.
 
 Final connected run: lint, TypeScript and production build passed. The configured test run passed 9 tests, with only the legacy missing-provider HTTP suite skipped. The signed-in owner sent a reply through the actual UI; the visitor API retrieved it. Closing the thread rejected further replies. Database inspection confirmed RLS and denied anon/authenticated SELECT grants on all seven application tables, plus an active daily retention job. The labelled test contact (and both replies), test professional visit and test page view were removed by their generated IDs/session. The owner inbox was checked empty afterward.
+
+## SwingLens walkthrough update — 29 October 2026
+
+The supplied recording was converted to a full-length H.264/AAC MP4, with a poster captured from the application. The project route and homepage link returned successfully; the media endpoint served video/mp4 and HTTP 206 byte ranges. Browser playback reported 1280 × 768, duration 446.401 seconds, advancing currentTime and no media error. The public app URL https://swinglens-cyan.vercel.app/ returned 200 without a login redirect and was confirmed by the user. No end-to-end market-data or AI-output validation of the external app is claimed.
+
+Final SwingLens checks: lint, TypeScript and production build passed. Mobile and desktop review showed no horizontal overflow (375/375 and 1265/1265 available viewport widths after scrollbars). Native video playback advanced without a media error, and the poster showed the SwingLens interface. The full-resolution original was not committed; only the 11.3 MiB web copy and 27 KB poster are included.

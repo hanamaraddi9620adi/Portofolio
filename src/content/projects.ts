@@ -14,6 +14,14 @@ export type Project = {
   limitations: string;
   repo?: string;
   demo?: string;
+  demoAccessNote?: string;
+  image?: string;
+  video?: {
+    src: string;
+    poster: string;
+    duration: string;
+    description: string;
+  };
   art: string;
 };
 const github = "https://github.com/hanamaraddi9620adi/";
@@ -48,6 +56,47 @@ export const projects: Project[] = [
     limitations:
       "The notebook and dataset were not supplied. MAE, RMSE and Random Forest scores are not published here because their values could not be verified. R² is not a percentage accuracy score.",
     art: "housing",
+  },
+  {
+    slug: "swinglens",
+    title: "SwingLens",
+    category: "Full-stack / Financial research",
+    summary:
+      "Market charts, computed stock analysis and AI-assisted research, brought together in a focused application. Explore the app and watch my walkthrough.",
+    stack: ["Python", "FastAPI", "React"],
+    status: "Deployed research application · Video walkthrough",
+    objective:
+      "Make stock-chart research easier to explore by connecting market data, calculated indicators and explanations in one interface.",
+    built:
+      "A stock-research application with a Python/FastAPI backend and React interface. The supplied recording demonstrates the market overview, research conversations and chart-analysis workflow.",
+    contribution:
+      "Developed SwingLens as a personal project and supplied the recorded product walkthrough featured below.",
+    architecture: [
+      "React interface",
+      "FastAPI endpoints",
+      "Market data & indicator calculations",
+      "Research explanations",
+    ],
+    details: [
+      "The inspected analysis-engine source includes RSI, ATR and swing-pivot calculations.",
+      "The project separates calculated numerical facts from AI-generated explanations.",
+      "The supplied walkthrough shows the application in use; its interface may differ from the latest deployed version.",
+    ],
+    results:
+      "A deployed application and a 7-minute, 26-second recorded walkthrough. No investment returns or prediction-accuracy figures are claimed.",
+    limitations:
+      "For research and education. Market-data availability and AI responses depend on their providers. Charts and explanations are not investment advice. The portfolio does not independently validate financial outputs.",
+    repo: github + "swinglens",
+    demo: "https://swinglens-cyan.vercel.app/",
+    image: "/images/projects/swinglens-market-preview.webp",
+    video: {
+      src: "/videos/swinglens-walkthrough.mp4",
+      poster: "/images/projects/swinglens-market-preview.webp",
+      duration: "7:26",
+      description:
+        "My recorded explanation of SwingLens, including its market overview, research interface and stock-chart workflow.",
+    },
+    art: "swinglens",
   },
   {
     slug: "navia",
@@ -194,11 +243,6 @@ export const projects: Project[] = [
   },
 ];
 export const repositoryNotes = [
-  {
-    name: "SwingLens",
-    repo: github + "swinglens",
-    text: "Stock-analysis prototype. Inspected Python code includes RSI, ATR and pivot calculations; runtime not verified.",
-  },
   {
     name: "LaunchLoop AI",
     repo: github + "applybee",

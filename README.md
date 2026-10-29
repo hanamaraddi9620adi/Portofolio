@@ -1,6 +1,6 @@
 # Hanamaraddi Kanakannavar — Portfolio
 
-Next.js 16 App Router + TypeScript portfolio in E:\Portofolio\Portofolio_codex, with original Three.js terrain, personal photographs, six project case studies, consented viewer analytics and private two-way conversations.
+Next.js 16 App Router + TypeScript portfolio in E:\Portofolio\Portofolio_codex, with original Three.js terrain, personal photographs, seven project case studies, consented viewer analytics and private two-way conversations.
 
 ## Open locally
 
@@ -102,3 +102,5 @@ The runtime dependency audit previously passed. Development lint tooling has an 
 - Unsupported project scores, unverified live demos and financial returns are not published. See docs/CONTENT-SOURCES.md.
 - Owner login expires with the Supabase access token; sign in again after expiry. No long-lived refresh token is persisted. Legacy contact records created before private inboxes must be answered by their supplied email address.
 - Message replies are visible through the private link; email notifications and account-based link recovery are not configured.
+
+SwingLens now has a selected-work card and a dedicated /projects/swinglens case study with the confirmed public app link https://swinglens-cyan.vercel.app/ and the supplied 7:26 walkthrough. The optimized video is stored at public/videos/swinglens-walkthrough.mp4 (about 11.3 MiB), uses native playback controls, and loads on demand. The source recording remains at its original user-supplied location.
