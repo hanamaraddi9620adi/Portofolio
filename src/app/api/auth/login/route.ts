@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     originGuard(req);
     const p = z
       .object({
-        email: z.email().max(254),
+        email: z.string().trim().toLowerCase().pipe(z.email().max(254)),
         password: z.string().min(1).max(256),
       })
       .safeParse(await readBody(req));
@@ -26,15 +26,30 @@ export async function POST(req: Request) {
       );
     await rateLimit(req, "login", 10);
     const { data, error } = await authClient().auth.signInWithPassword(p.data);
+    if (error) {
+      if (error.code === "invalid_credentials")
+        throw new ApiError(
+          "The email or password is incorrect. Use the password created for your portfolio owner account.",
+          401,
+        );
+      if (error.code === "email_not_confirmed")
+        throw new ApiError(
+          "Confirm your owner account email before signing in.",
+          401,
+        );
+      throw new ApiError(
+        "Sign-in is temporarily unavailable. Please try again later.",
+        503,
+      );
+    }
     if (
-      error ||
       !data.user?.email_confirmed_at ||
       data.user.id !== process.env.OWNER_USER_ID ||
       data.user.email?.toLowerCase() !== process.env.OWNER_EMAIL.toLowerCase()
     )
       throw new ApiError(
-        "Sign-in failed or this account is not authorized.",
-        401,
+        "This account does not have owner access to this portfolio.",
+        403,
       );
     (await cookies()).set("portfolio-owner", data.session.access_token, {
       httpOnly: true,

@@ -1,7 +1,7 @@
 "use client";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-export function Login() {
+export function Login({ email = "" }: { email?: string }) {
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const router = useRouter();
@@ -37,7 +37,13 @@ export function Login() {
     <form className="login-form" onSubmit={submit}>
       <label>
         Owner email
-        <input name="email" type="email" required autoComplete="username" />
+        <input
+          name="email"
+          type="email"
+          required
+          autoComplete="username"
+          defaultValue={email}
+        />
       </label>
       <label>
         Password
@@ -48,6 +54,7 @@ export function Login() {
           autoComplete="current-password"
         />
       </label>
+      <p>Use the password created for this portfolio’s owner account.</p>
       <button className="button primary" disabled={busy}>
         {busy ? "Checking access…" : "Sign in securely →"}
       </button>

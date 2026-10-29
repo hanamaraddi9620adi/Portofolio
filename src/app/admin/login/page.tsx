@@ -21,7 +21,7 @@ export default async function LoginPage() {
           README.md. No analytics records are available publicly.
         </div>
       )}
-      <Login />
+      <Login email={process.env.OWNER_EMAIL || ""} />
     </main>
   );
 }
